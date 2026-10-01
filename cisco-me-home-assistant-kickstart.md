@@ -17,6 +17,7 @@ Unknowns are marked **{tbd}**.
 Build a modern, UI-configurable Home Assistant integration for Cisco Mobility Express (ME) that exposes **everything useful** the controller knows — controller health, APs, radios, WLANs and clients — and offers **actions** (WLAN on/off, AP reboot, LED, PSK rotation) and **events** (client join/leave/roam).
 
 The existing core integration `cisco_mobility_express` is YAML-only, presence-only, has ~8 installs and known issues (DNS hostnames, no `consider_home`, timeouts since 2025.2). This project replaces it for our use case; it does not try to fix it upstream (optional later).
+Create a memory file in GIT 
 
 ### Non-goals (v1)
 - Catalyst 9800 / AireOS full WLC support (architecture should allow it later — see §9)
