@@ -13,11 +13,14 @@ rotation) and events (client join/leave/roam). Owner: Niko.
 
 ## Current status
 
-- **Milestone:** M0 and M1 done for SNMP. **M2 done** (2026-10-01): `lib/pyciscome` polls controller,
-  APs, radios, WLANs and clients over SNMP v2c; 9 tests pass on anonymised fixtures; a live poll of the
-  ME takes ~1.2 s for a full snapshot and ~0.5 s for the client table alone.
-- **Next step:** M3 — `custom_components/cisco_me_plus` (config flow, coordinator, sensors,
-  device_tracker with consider_home) on top of `pyciscome`.
+- **Milestone:** M0–M2 done. **M3 code-complete** (2026-10-01): `custom_components/cisco_me_plus` has
+  config flow (host, v2c community, port), options flow (scan interval, consider_home), one SNMP
+  coordinator, sensors and binary sensors for controller/AP/radio/WLAN, and a `device_tracker` per client.
+  26 tests pass, including a live read-only setup against the ME (97 entities).
+- **Not yet done for M3's exit criterion:** it has never run in a real Home Assistant install; the
+  "24 h in dev HA without errors" check is open. Niko has not said which HA instance to test on.
+- **Next step:** install on a real HA (HACS custom repo or copy the folder), watch it for a day, then M4
+  (CLI driver + actions) — which needs Niko to lift the read-only rule.
 - **Still open from M1:** per-AP/per-client `show … detail` captures and CLI parsers (needed for M4),
   web UI JSON endpoints (not looked at yet).
 - **Waiting on Niko:** pointing ME syslog at the HA server (agreed; the level must also be raised from
@@ -26,7 +29,12 @@ rotation) and events (client join/leave/roam). Owner: Niko.
 ## How to work here
 
 - `.venv/bin/pytest -q` and `.venv/bin/ruff check . && .venv/bin/ruff format --check .` before committing.
-- `set -a; . ./.env; set +a` then `.venv/bin/python tools/poll_me.py` for a live read-only smoke test.
+- `set -a; . ./.env; set +a` then `.venv/bin/python tools/poll_me.py` for a live read-only smoke test;
+  with the same env, `pytest tests/cisco_me_plus/test_live.py -s` sets the integration up against the ME.
+- The venv is Python 3.13 with HA 2026.2.3 (`pytest-homeassistant-custom-component`) and pysnmp 7.1.22
+  (HA's own pin). Building it needed `apt install python3-dev`. Keep `asyncssh<2.22` (newer ones need a
+  `cryptography` HA does not allow).
+- Custom integrations read `translations/en.json`; there is no `strings.json`.
 - New captures: `tools/capture_cli.py` / `tools/capture_snmp.py` into `tests/fixtures/raw/`, then
   `tools/anonymise_fixtures.py` regenerates `tests/fixtures/{snmp,cli}` and aborts if any original MAC,
   IP, serial or SSID survives. Add new SNMP tables to its allowlist; never commit anything from `raw/`.
@@ -57,7 +65,9 @@ Decisions made after the kickstart was written. Newest first.
 | 2026-10-01 | Syslog will be pointed at the HA server (by Niko) | The listener runs inside the integration |
 | 2026-10-01 | Poll SNMP per column, sequentially | Whole-table walks fetch ~10x unused data; ME runs on an AP CPU |
 | 2026-10-01 | Repo stays `me_cisco_haas`; integration domain is `cisco_me_plus` | Niko's choice; kickstart §7 name `cisco-me-ha` is obsolete |
-| 2026-10-01 | `pyciscome` lives in this repo under `lib/pyciscome` | Simplest while iterating; can be split out to PyPI before the HACS release |
+| 2026-10-01 | `pyciscome` is vendored at `custom_components/cisco_me_plus/pyciscome` (was `lib/pyciscome`) | HACS only ships the integration folder and the lib is not on PyPI; `pyproject.toml` still exposes it as top-level `pyciscome`. Claude's call — Niko had picked "inside this repo" |
+| 2026-10-01 | One coordinator, full snapshot every 30 s (min 10 s), instead of a separate fast client poll | A full snapshot takes ~1.2 s, so the split in AD-03 is not needed yet |
+| 2026-10-01 | WLAN "enabled" is a read-only binary sensor until M4 turns it into a switch | Read-only rule |
 | 2026-10-01 | Commit directly to `main` and push | Solo repo, Niko's choice |
 | 2026-10-01 | Project memory lives in this file, in git | Requested by Niko |
 
@@ -123,3 +133,4 @@ IPs, names) come back as raw bytes. The master AP's serial equals the controller
   Then got ME access, added `tools/capture_cli.py` and `tools/capture_snmp.py`, captured CLI output and
   both SNMP walks, resolved the core OIDs. Only read-only commands were sent to the ME.
   Built `tools/anonymise_fixtures.py`, committed anonymised fixtures, built `lib/pyciscome` (M2).
+  Built the HA integration (M3) with tests; verified live read-only.

@@ -11,19 +11,26 @@ requires-python = ">=3.12"
 dependencies = ["pysnmp>=7.1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6", "asyncssh>=2.14"]
+dev = ["pytest-homeassistant-custom-component", "ruff>=0.6", "asyncssh>=2.14"]
 
-[tool.setuptools.packages.find]
-where = ["lib"]
+[tool.setuptools]
+packages = ["pyciscome", "pyciscome.parsers"]
+
+[tool.setuptools.package-dir]
+pyciscome = "custom_components/cisco_me_plus/pyciscome"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 110
 target-version = "py312"
-src = ["lib", "tests", "tools"]
+src = [".", "tests", "tools"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pyciscome", "custom_components"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]

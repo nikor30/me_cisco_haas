@@ -1,0 +1,63 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Cisco Mobility Express",
+        "description": "Connect to the controller over SNMP v2c. A read-only community is enough.",
+        "data": {
+          "host": "Host",
+          "community": "SNMP community",
+          "port": "SNMP port"
+        },
+        "data_description": {
+          "host": "IP address or hostname of the Mobility Express controller.",
+          "community": "Read-only SNMP v2c community configured on the controller."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No SNMP answer from this host. Check the address, the community and that SNMP v2c is enabled.",
+      "not_mobility_express": "The device answered, but it does not look like a Mobility Express controller."
+    },
+    "abort": {
+      "already_configured": "This controller is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Polling interval (seconds)",
+          "consider_home": "Consider home (seconds)"
+        },
+        "data_description": {
+          "consider_home": "How long a client stays 'home' after it was last seen associated."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "cpu": { "name": "CPU usage" },
+      "memory": { "name": "Memory usage" },
+      "uptime": { "name": "Last restart" },
+      "clients": { "name": "Clients" },
+      "clients_24": { "name": "Clients 2.4 GHz" },
+      "clients_5": { "name": "Clients 5 GHz" },
+      "access_points": { "name": "Access points online" },
+      "ip": { "name": "IP address" },
+      "radio_channel": { "name": "{radio} channel" },
+      "radio_channel_width": { "name": "{radio} channel width" },
+      "radio_tx_power_level": { "name": "{radio} transmit power level" },
+      "radio_utilization": { "name": "{radio} channel utilization" },
+      "radio_noise": { "name": "{radio} noise floor" },
+      "radio_clients": { "name": "{radio} clients" }
+    },
+    "binary_sensor": {
+      "reachable": { "name": "Reachable" },
+      "online": { "name": "Online" },
+      "radio_up": { "name": "{radio} radio" },
+      "wlan_enabled": { "name": "Enabled" }
+    }
+  }
+}

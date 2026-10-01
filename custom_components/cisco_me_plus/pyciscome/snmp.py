@@ -39,6 +39,7 @@ class PysnmpTransport:
         timeout: float = 5,
         retries: int = 2,
         max_repetitions: int = 25,
+        engine: SnmpEngine | None = None,
     ) -> None:
         self._host = host
         self._port = port
@@ -46,7 +47,9 @@ class PysnmpTransport:
         self._timeout = timeout
         self._retries = retries
         self._max_repetitions = max_repetitions
-        self._engine: SnmpEngine | None = None
+        # creating an engine reads MIB files from disk; callers on an event loop that must not block
+        # (Home Assistant) create it in a thread and pass it in
+        self._engine = engine
         self._target: UdpTransportTarget | None = None
 
     async def walk(self, root: str) -> dict[str, SnmpValue]:
