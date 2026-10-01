@@ -1,0 +1,4 @@
+Burned-in MAC Address............................ 02:00:00:00:00:01
+Maximum number of APs supported.................. 100
+NAME: "Mobility Express"    , DESCR: "Cisco Aironet 3800 Series Mobility Express"
+PID: AIR-AP3802I-E-K9,  VID: V01,  SN: FCW0000A001

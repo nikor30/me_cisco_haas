@@ -1,0 +1,42 @@
+Rogue Detection Security Level................... high
+Rogue Pending Time............................... 60 secs
+Rogue on wire Auto-Contain....................... Disabled
+Rogue using our SSID Auto-Contain................ Disabled
+Valid client on rogue AP Auto-Contain............ Disabled
+Rogue AP timeout................................. 1200
+Rogue Detection Report Interval.................. 30
+Rogue Detection Min Rssi......................... -80
+Rogue Detection Transient Interval............... 300
+Rogue Detection Client Num Threshold............. 0
+Validate rogue AP against AAA.................... Disabled
+Rogue AP AAA validation interval................. 0 secs
+Total Rogues(AP+Ad-hoc) supported................ 200
+Total Rogues classified.......................... 23
+
+MAC Address       Class        State                #Det #Rogue  #Highest RSSI     #RSSI  #Channel        #Second Highest   #RSSI  #Channel
+                                                    Aps  Clients  det-Ap                                  RSSI Det-Ap
+----------------- ------------ -------------------- ---- ------- ----------------- ------ --------------- ----------------- ------ ---------------
+02:00:00:00:00:27 Unclassified Alert                1    0       02:00:00:00:00:22 -79    (100,104,108,112) 
+02:00:00:00:00:28 Unclassified Alert                1    0       02:00:00:00:00:22 -79    11                
+02:00:00:00:00:29 Unclassified Alert                1    0       02:00:00:00:00:23 -79    (36,40,44,48)     
+02:00:00:00:00:2a Unclassified Alert                2    0       02:00:00:00:00:21 -69    11                02:00:00:00:00:22 -78    11                
+02:00:00:00:00:2b Unclassified Alert                1    0       02:00:00:00:00:21 -70    11                
+02:00:00:00:00:2c Unclassified Alert                2    0       02:00:00:00:00:21 -62    6                 02:00:00:00:00:22 -64    6                 
+02:00:00:00:00:2d Unclassified Alert                3    0       02:00:00:00:00:23 -53    (120,116,124,128) 02:00:00:00:00:22 -78    (120,116,124,128) 
+02:00:00:00:00:2e Unclassified Alert                2    1       02:00:00:00:00:21 -58    11                02:00:00:00:00:22 -74    11                
+02:00:00:00:00:2f Unclassified Alert                2    0       02:00:00:00:00:21 -72    unknown           02:00:00:00:00:21 -77    unknown           
+02:00:00:00:00:30 Unclassified Alert                1    0       02:00:00:00:00:21 -64    (100,104,108,112) 
+02:00:00:00:00:31 Unclassified Alert                2    0       02:00:00:00:00:21 -57    11                02:00:00:00:00:22 -77    11                
+02:00:00:00:00:32 Unclassified Alert                2    1       02:00:00:00:00:21 -69    unknown           02:00:00:00:00:21 -73    unknown           
+02:00:00:00:00:33 Unclassified Alert                1    0       02:00:00:00:00:21 -63    (100,104,108,112) 
+02:00:00:00:00:34 Unclassified Alert                2    0       02:00:00:00:00:21 -58    11                02:00:00:00:00:22 -73    11                
+02:00:00:00:00:35 Unclassified Alert                1    0       02:00:00:00:00:21 -76    1                 
+02:00:00:00:00:36 Unclassified Alert                1    0       02:00:00:00:00:22 -75    6                 
+02:00:00:00:00:37 Unclassified Alert                1    0       02:00:00:00:00:22 -76    6                 
+02:00:00:00:00:38 Unclassified Alert                1    0       02:00:00:00:00:22 -79    11                
+02:00:00:00:00:39 Unclassified Alert                1    0       02:00:00:00:00:22 -79    11                
+02:00:00:00:00:3a Pending      Pending              1    0       02:00:00:00:00:22 -79    11                
+02:00:00:00:00:3b Unclassified Alert                2    0       02:00:00:00:00:21 -63    1                 02:00:00:00:00:22 -77    1                 
+02:00:00:00:00:3c Unclassified Alert                1    0       02:00:00:00:00:21 -79    1                 
+02:00:00:00:00:1d Unclassified Alert                1    0       02:00:00:00:00:21 -51    1                 
+02:00:00:00:00:3d Unclassified Alert                1    0       02:00:00:00:00:21 -63    13                

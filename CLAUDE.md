@@ -13,12 +13,25 @@ rotation) and events (client join/leave/roam). Owner: Niko.
 
 ## Current status
 
-- **Milestone:** M0 verified (SSH + SNMP v2c work from this dev host, a Raspberry Pi). M1 mostly done:
-  walks and CLI output captured, core `{tbd}` OIDs resolved (see "Lab findings").
-- **Left in M1:** anonymiser so fixtures can be committed; enum meanings for the LWAPP columns;
-  per-AP/per-client `show … detail` captures; web UI JSON endpoints (not looked at yet).
-- **Next step:** M2 — `lib/pyciscome` SNMP client + models + parsers, tested on anonymised fixtures.
-- **Blocked on Niko:** syslog host and SNMPv3 user are not configured on the ME (needed for M5 / §11).
+- **Milestone:** M0 and M1 done for SNMP. **M2 done** (2026-10-01): `lib/pyciscome` polls controller,
+  APs, radios, WLANs and clients over SNMP v2c; 9 tests pass on anonymised fixtures; a live poll of the
+  ME takes ~1.2 s for a full snapshot and ~0.5 s for the client table alone.
+- **Next step:** M3 — `custom_components/cisco_me_plus` (config flow, coordinator, sensors,
+  device_tracker with consider_home) on top of `pyciscome`.
+- **Still open from M1:** per-AP/per-client `show … detail` captures and CLI parsers (needed for M4),
+  web UI JSON endpoints (not looked at yet).
+- **Waiting on Niko:** pointing ME syslog at the HA server (agreed; the level must also be raised from
+  `errors` or client join/leave will not be sent). SNMPv3 is postponed — v2c for now.
+
+## How to work here
+
+- `.venv/bin/pytest -q` and `.venv/bin/ruff check . && .venv/bin/ruff format --check .` before committing.
+- `set -a; . ./.env; set +a` then `.venv/bin/python tools/poll_me.py` for a live read-only smoke test.
+- New captures: `tools/capture_cli.py` / `tools/capture_snmp.py` into `tests/fixtures/raw/`, then
+  `tools/anonymise_fixtures.py` regenerates `tests/fixtures/{snmp,cli}` and aborts if any original MAC,
+  IP, serial or SSID survives. Add new SNMP tables to its allowlist; never commit anything from `raw/`.
+- **Read-only against the ME** (Niko, 2026-10-01): `show` commands and SNMP reads only, until he says
+  otherwise. He is on that network himself.
 
 ## Ground rules (from the kickstart)
 
@@ -40,6 +53,9 @@ Decisions made after the kickstart was written. Newest first.
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-10-01 | SNMP v2c for now, v3 later; read-only commands only | Niko's choice |
+| 2026-10-01 | Syslog will be pointed at the HA server (by Niko) | The listener runs inside the integration |
+| 2026-10-01 | Poll SNMP per column, sequentially | Whole-table walks fetch ~10x unused data; ME runs on an AP CPU |
 | 2026-10-01 | Repo stays `me_cisco_haas`; integration domain is `cisco_me_plus` | Niko's choice; kickstart §7 name `cisco-me-ha` is obsolete |
 | 2026-10-01 | `pyciscome` lives in this repo under `lib/pyciscome` | Simplest while iterating; can be split out to PyPI before the HACS release |
 | 2026-10-01 | Commit directly to `main` and push | Solo repo, Niko's choice |
@@ -84,11 +100,11 @@ Verified facts about the real device (OIDs, CLI quirks, timings). Captured 2026-
 | CPU % | `1.1.5.1.0` | |
 | Memory total / free (kB) | `1.1.5.2.0` / `1.1.5.3.0` | used % matches `show sysinfo` |
 | AP table `bsnAPTable` | `2.2.1.1.<col>.<base radio MAC>` | 3 = name, 4 = location, 6 = oper status (1 = up), 16 = model, 17 = serial, 19 = IP, 33 = ethernet MAC, 8/31 = sw version |
-| Radio table `bsnAPIfTable` | `2.2.2.1.<col>.<MAC>.<slot>` | 1 = slot, 4 = channel, 6 = tx power level, 12 = oper status, 34 = admin status |
+| Radio table `bsnAPIfTable` | `2.2.2.1.<col>.<MAC>.<slot>` | 1 = slot, 4 = channel, 6 = tx power level, 12 = oper status (2 = up, 1 = down), 34 = admin status (1 = enabled, 2 = disabled) |
 | Radio load | `2.2.13.1.<col>.<MAC>.<slot>` | 1 = rx util, 2 = tx util, 3 = channel util %, 4 = clients |
 | Radio noise | `2.2.15.1.21.<MAC>.<slot>.<channel>` | dBm, one row per channel |
 | WLAN table `bsnDot11EssTable` | `2.1.1.1.<col>.<wlan id>` | 2 = SSID, 6 = admin status (1 = enabled), 38 = client count, 42 = interface. PSK columns read as `****` |
-| Client table | `2.1.4.1.<col>.<client MAC>` | 1 = MAC, 2 = IP, 3 = username, 4 = AP base radio MAC, 5 = slot, 6 = WLAN id, 7 = SSID, 9 = status (3 = associated), 23 = policy state (`RUN`), 25 = protocol |
+| Client table | `2.1.4.1.<col>.<client MAC>` | 1 = MAC, 2 = IP, 3 = username, 4 = AP base radio MAC, 5 = slot, 6 = WLAN id, 7 = SSID, 9 = status (3 = associated), 23 = policy state (`RUN`), 25 = protocol (**unreliable**: reports 802.11ac as 1 = 802.11a; use LWAPP col 6) |
 | Client RSSI / SNR | `2.1.6.1.1` / `2.1.6.1.26` | **available via SNMP**; also byte/packet counters in cols 2–6 |
 
 All AP/radio/client tables are indexed by MAC as 6 decimal sub-identifiers. Octet-string values (MACs,
@@ -97,12 +113,13 @@ IPs, names) come back as raw bytes. The master AP's serial equals the controller
 ### SNMP — CISCO-LWAPP (`1.3.6.1.4.1.9.9`), 11079 varbinds
 
 - `513.1.1.1.1.<col>.<MAC>` (AP): 5 = name, 6 = AP uptime, 7 = CAPWAP uptime, 8 = join time, 54 = clients.
-- `513.1.2.1.1.<col>.<MAC>.<slot>` (radio): 23 = channel width enum, 24 = extension channels.
-- `599.1.3.1.1.<col>.<client MAC>` (client): 6 = protocol, 8 = AP MAC, 15 = uptime (s), 17 = data rate,
-  28 = SSID. Exact enum meanings still need checking against the MIB files.
+- `513.1.2.1.1.<col>.<MAC>.<slot>` (radio): 23 = channel width (3 = 20 MHz, 5 = 80 MHz), 24 = extension channels.
+- `599.1.3.1.1.<col>.<client MAC>` (client): 6 = protocol (3 = g, 6 = n 2.4, 7 = n 5, 10 = ac — checked
+  against `show client summary`), 8 = AP MAC, 15 = uptime (s), 17 = data rate, 28 = SSID, 44 = device type.
 
 ## Session log
 
 - **2026-10-01** — Read kickstart, created this memory file, settled naming, library location and git workflow.
   Then got ME access, added `tools/capture_cli.py` and `tools/capture_snmp.py`, captured CLI output and
   both SNMP walks, resolved the core OIDs. Only read-only commands were sent to the ME.
+  Built `tools/anonymise_fixtures.py`, committed anonymised fixtures, built `lib/pyciscome` (M2).

@@ -1,0 +1,13 @@
+Number of APs.................................... 3
+
+Global AP User Name.............................. AP1
+Global AP Dot1x User Name........................ Not Configured
+Global AP Dot1x EAP Method....................... EAP-FAST
+
+* prefix indicates Cisco Internal AP
+
+AP Name                         Slots  AP Model              Ethernet MAC       Location              Country     IP Address       Clients  DSE Location  
+------------------------------  -----  --------------------  -----------------  --------------------  ----------  ---------------  -------  --------------
+kitchen                         3      AIR-AP3802I-E-K9       02:00:00:00:00:26  default location      DE          192.0.2.34   6        [0 ,0 ,0 ]
+*studio                          3      AIR-AP3802I-E-K9       02:00:00:00:00:24  default location      DE          192.0.2.32   19       [0 ,0 ,0 ]
+bedroom                         3      AIR-AP3802I-E-K9       02:00:00:00:00:25  default location      DE          192.0.2.33   6        [0 ,0 ,0 ]

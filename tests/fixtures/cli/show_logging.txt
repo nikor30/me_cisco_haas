@@ -1,0 +1,92 @@
+Logging to Logger Queue : 
+- Logging of system messages to Logger Queue : 
+ - Effective Logging Queue filter level.......... errors
+- Number of Messages recieved for logging : 
+ - Emergency severity............................ 0
+ - Alert Severity................................ 0
+ - Critical Severity............................. 0
+ - Error Severity................................ 24
+ - Warning Severity.............................. 363
+ - Notice Severity............................... 314
+ - Information Severity.......................... 167
+ - Debug Severity................................ 1
+ - Total messages recieved....................... 869
+ - Total messages enqueued....................... 21
+ - Total messages dropped........................ 848
+Logging to buffer : 
+- Logging of system messages to buffer : 
+ - Logging filter level.......................... errors
+ - Number of system messages logged.............. 24
+ - Number of system messages dropped............. 
+- Number of Messages dropped due to Facility .... 0855
+- Logging of debug messages to buffer ........... Disabled
+ - Number of debug messages logged............... 0
+ - Number of debug messages dropped.............. 0
+- Cache of logging  ............................. Disabled
+- Cache of logging time(mins) ................... 10080
+- Number of over cache time log dropped  ........ 0
+Logging to console : 
+- Logging of system messages to console : 
+ - Logging filter level.......................... disabled
+ - Number of system messages logged.............. 0
+ - Number of system messages dropped............. 879
+ - Number of system messages throttled........... 0
+- Logging of debug messages to console .......... Enabled
+ - Number of debug messages logged............... 0
+ - Number of debug messages dropped.............. 0
+ - Number of debug messages throttled............ 0
+Logging to syslog : 
+- Syslog facility................................ local0
+- Logging of system messages to syslog : 
+ - Logging filter level.......................... errors
+ - Number of system messages logged.............. 24
+ - Number of system messages dropped............. 855
+- Logging of debug messages to syslog ........... Disabled
+ - Number of debug messages logged............... 0
+ - Number of debug messages dropped.............. 0
+- Number of remote syslog hosts.................. 0
+- syslog over tls................................ Disabled
+- syslog over ipsec.............................. Disabled
+- ipsec profile inuse for syslog................. none
+  - Host 0....................................... 
+  - Host 1....................................... 
+  - Host 2....................................... 
+Logging of Debug messages to file : 
+- Logging of Debug messages to file.............. Disabled
+- Number of debug messages logged................ 0
+- Number of debug messages dropped............... 0
+Logging of traceback............................. Enabled
+- Traceback logging level........................ errors
+Logging of source file informational............. Enabled
+Timestamping of messages......................... 
+- Timestamping of system messages................ Enabled
+ - Timestamp format.............................. Date and Time
+- Timestamping of debug messages................. Enabled
+ - Timestamp format.............................. Date and Time
+
+ Logging buffer (24 logged, 855 dropped)
+
+*emWeb: Oct 01 07:54:08.104: %HREAP-3-HREAP_XML_FILE_SIZE: hreap_cfg.c:509 Hreap XML file size is: 2604 bytes.
+*Dot1x_NW_MsgTask_0: Oct 01 04:16:35.206: %DOT1X-3-INVALID_REPLAY_CTR: 1x_eapkey.c:458 Invalid replay counter from client 02:00:00:00:00:13 - got 00 00 00 00 00 00 00 00, expected 00 00 00 00 00 00 00 01
+*Dot1x_NW_MsgTask_0: Sep 30 16:05:38.445: %DOT1X-3-INVALID_REPLAY_CTR: 1x_eapkey.c:458 Invalid replay counter from client 02:00:00:00:00:1b - got 00 00 00 00 00 00 00 00, expected 00 00 00 00 00 00 00 01
+*Dot1x_NW_MsgTask_0: Sep 30 15:46:34.690: %DOT1X-3-INVALID_WPA_KEY_STATE: 1x_eapkey.c:3080 Received EAPOL-key message while in invalid state (4) - version 1, type 3, descriptor 2, client 02:00:00:00:00:14
+*Dot1x_NW_MsgTask_0: Sep 30 15:46:34.690: %LOG-3-Q_IND: 1x_eapkey.c:458 Invalid replay counter from client 02:00:00:00:00:14 - got 00 00 00 00 00 00 00 00, expected 00 00 00 00 00 00 00 01
+*Dot1x_NW_MsgTask_0: Sep 30 15:46:34.672: %DOT1X-3-INVALID_REPLAY_CTR: 1x_eapkey.c:458 Invalid replay counter from client 02:00:00:00:00:14 - got 00 00 00 00 00 00 00 00, expected 00 00 00 00 00 00 00 01
+*Dot1x_NW_MsgTask_0: Sep 30 14:37:25.536: %DOT1X-3-PSK_CONFIG_ERR: 1x_ptsm.c:766 Client 02:00:00:00:00:13 may be using an incorrect PSK
+*Dot1x_NW_MsgTask_0: Sep 30 14:30:49.627: %DOT1X-3-INVALID_REPLAY_CTR: 1x_eapkey.c:458 Invalid replay counter from client 02:00:00:00:00:13 - got 00 00 00 00 00 00 00 00, expected 00 00 00 00 00 00 00 01
+*spamApTask0: Sep 30 14:06:53.863: %LWAPP-3-AP_DEL: spam_lrad.c:6090 02:00:00:00:00:22: Entry deleted for AP: 192.0.2.33 (5248) reason : AP Message Timeout.
+*spamApTask0: Sep 30 14:06:53.862: %CAPWAP-3-DTLS_CLOSED_ERR: capwap_ac_sm.c:7521 02:00:00:00:00:22:  DTLS connection closed forAP  192:0:2:33 (5248), Controller: 192:0:2:37 (5246) AP Message Timeout
+*spamApTask0: Sep 30 14:06:53.861: %CAPWAP-3-MAX_RETRANSMISSIONS_REACHED: capwap_ac_sm.c:8073 Max retransmissions reached on AP(02:00:00:00:00:22),message (CAPWAP_CONFIGURATION_UPDATE_REQUEST
+),number of pending messages(2)
+*emWeb: Sep 30 13:46:57.271: %HREAP-3-HREAP_XML_FILE_SIZE: hreap_cfg.c:509 Hreap XML file size is: 2364 bytes.
+*Dot1x_NW_MsgTask_0: Sep 30 11:45:17.352: %DOT1X-3-INVALID_WPA_KEY_STATE: 1x_eapkey.c:3080 Received EAPOL-key message while in invalid state (4) - version 1, type 3, descriptor 2, client 02:00:00:00:00:0c
+*emWeb: Sep 30 11:43:56.775: %HREAP-3-HREAP_XML_FILE_SIZE: hreap_cfg.c:509 Hreap XML file size is: 2115 bytes.
+*Dot1x_NW_MsgTask_0: Sep 30 11:43:29.343: %DOT1X-3-INVALID_REPLAY_CTR: 1x_eapkey.c:458 Invalid replay counter from client 02:00:00:00:00:0a - got 00 00 00 00 00 00 00 01, expected 00 00 00 00 00 00 00 03
+*emWeb: Sep 30 11:35:39.713: %HREAP-3-HREAP_XML_FILE_SIZE: hreap_cfg.c:509 Hreap XML file size is: 2113 bytes.
+*Dot1x_NW_MsgTask_0: Sep 30 11:34:18.880: %DOT1X-3-INVALID_REPLAY_CTR: 1x_eapkey.c:458 Invalid replay counter from client 02:00:00:00:00:1e - got 00 00 00 00 00 00 00 00, expected 00 00 00 00 00 00 00 01
+*spamApTask0: Sep 30 11:25:34.193: %LOG-3-Q_IND: rrmClient.c:1362 RRM LOG: iapp chd, Unable to find AP 02:00:00:00:00:22
+*CAPWAP DATA: Sep 30 11:25:34.117: %RRM-3-RRM_LOGMSG: rrmClient.c:1362 RRM LOG: iapp chd, Unable to find AP 02:00:00:00:00:22
+*CAPWAP DATA: Sep 30 11:25:33.042: %RRM-3-RRM_LOGMSG: rrmClient.c:1599 RRM LOG: iapp chd client stat , Unable to find AP 02:00:00:00:00:23
+*emWeb: Sep 30 11:25:28.026: %LOG-3-Q_IND: rrmClient.c:1362 RRM LOG: iapp chd, Unable to find AP 02:00:00:00:00:23
+*CAPWAP DATA: Sep 30 11:25:25.431: %RRM-3-RRM_LOGMSG: rrmClient.c:1362 RRM LOG: iapp chd, Unable to find AP 02:00:00:00:00:23
+*fp_main_task: Sep 30 11:25:16.444: %CNFGR-3-INV_COMP_ID: cnfgr.c:4326 Invalid Component Id : Unrecognized (45) in cfgConfiguratorInit.

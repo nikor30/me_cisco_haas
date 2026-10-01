@@ -1,0 +1,38 @@
+Number of Clients................................ 31
+
+Number of EoGRE Clients.......................... 0
+
+                                                                RLAN/
+MAC Address       AP Name                        Slot Status        WLAN  Auth Protocol         Port Wired Tunnel  Role
+----------------- ------------------------------ ---- ------------- ----- ---- ---------------- ---- ----- ------- ----------------
+02:00:00:00:00:02 studio                          0   Associated     2    Yes   802.11g          1    N/A   No      Local           
+02:00:00:00:00:03 studio                          1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:04 studio                          1   Associated     1    Yes   802.11n(5 GHz)   1    N/A   No      Local           
+02:00:00:00:00:05 studio                          1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:06 bedroom                         0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:07 bedroom                         0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:08 kitchen                         1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:09 studio                          1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:0a kitchen                         1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:0b studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:0c studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:0d kitchen                         1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:0e studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:0f studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:10 studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:11 bedroom                         1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:12 bedroom                         0   Associated     1    Yes   802.11g          1    N/A   No      Local           
+02:00:00:00:00:13 studio                          0   Associated     1    Yes   802.11g          1    N/A   No      Local           
+02:00:00:00:00:14 bedroom                         0   Associated     1    Yes   802.11g          1    N/A   No      Local           
+02:00:00:00:00:15 studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:16 studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:17 kitchen                         1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:18 kitchen                         1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:19 bedroom                         0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:1a studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:1b studio                          0   Associated     1    Yes   802.11g          1    N/A   No      Local           
+02:00:00:00:00:1c studio                          0   Associated     1    Yes   802.11g          1    N/A   No      Local           
+02:00:00:00:00:1d studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:1e studio                          0   Associated     1    Yes   802.11n(2.4 GHz) 1    N/A   No      Local           
+02:00:00:00:00:1f studio                          1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           
+02:00:00:00:00:20 kitchen                         1   Associated     1    Yes   802.11ac(5 GHz)  1    N/A   No      Local           

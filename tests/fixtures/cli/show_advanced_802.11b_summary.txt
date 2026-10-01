@@ -1,0 +1,8 @@
+Member RRM Information
+AP Name                          MAC Address       Slot Admin    Oper        Channel            TxPower       BSS Color
+-------------------------------- ----------------- ---- -------- ----------- ------------------ ------------- ---------
+kitchen                          02:00:00:00:00:23  0   DISABLED DOWN        1*                 *2/5 (11 dBm) N/A      
+studio                           02:00:00:00:00:21  0   ENABLED  UP          1*                 *1/5 (14 dBm) N/A      
+bedroom                          02:00:00:00:00:22  0   ENABLED  UP          11*                *2/5 (11 dBm) N/A      
+
+* global assignment

@@ -1,0 +1,38 @@
+Manufacturer's Name.............................. Cisco Systems Inc.
+Product Name..................................... Cisco Controller
+Product Version.................................. 8.10.196.0
+OUI File Last Update Time........................ N/A
+
+System Name...................................... AP1
+System Location.................................. 
+System Contact................................... 
+System ObjectID.................................. 1.3.6.1.4.1.9.1.2373
+IP Address....................................... 192.0.2.37
+Last Reset....................................... 0: unknown
+
+System Up Time................................... 0 days 21 hrs 41 mins 50 secs
+System Timezone Location......................... (GMT +1:00) Amsterdam, Berlin, Rome, Vienna
+System Stats Realtime Interval................... 5
+System Stats Normal Interval..................... 180
+
+Configured Country............................... DE  - Germany
+
+State of 802.11b Network......................... Enabled
+State of 802.11a Network......................... Enabled
+Number of WLANs.................................. 2
+Number of Active Clients......................... 31
+
+OUI Classification Failure Count................. 1895
+
+Memory Current Usage............................. 80
+Memory Average Usage............................. 79
+CPU Current Usage................................ 23
+CPU Average Usage................................ 21
+
+Flash Type....................................... Compact Flash Card
+Flash Size....................................... 1073741824
+
+Burned-in MAC Address............................ 02:00:00:00:00:01
+Maximum number of APs supported.................. 100
+System Nas-Id.................................... 
+WLC MIC Certificate Types........................ SHA1/SHA2

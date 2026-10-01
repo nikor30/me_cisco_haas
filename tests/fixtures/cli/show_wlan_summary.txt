@@ -1,0 +1,6 @@
+Number of WLANs.................................. 2
+
+WLAN ID  WLAN Profile Name / SSID                                                  Status    Interface Name
+-------  -------------------------------------                                    --------  --------------------
+1        ssid-1 / ssid-1                                                              Enabled   management            
+2        ssid-2 / ssid-2                                                          Enabled   management            

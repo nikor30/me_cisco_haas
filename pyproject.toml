@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyciscome"
+version = "0.1.0"
+description = "Async client for Cisco Mobility Express controllers (SNMP, later SSH CLI)"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.12"
+dependencies = ["pysnmp>=7.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6", "asyncssh>=2.14"]
+
+[tool.setuptools.packages.find]
+where = ["lib"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+src = ["lib", "tests", "tools"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
