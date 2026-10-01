@@ -98,6 +98,29 @@ class Client:
 
 
 @dataclass(slots=True)
+class Application:
+    """One row of the controller's AVC statistics. "Recent" is the controller's own sampling window."""
+
+    name: str
+    bytes_up: int = 0
+    bytes_down: int = 0
+    packets_up: int = 0
+    packets_down: int = 0
+    total_bytes_up: int = 0
+    total_bytes_down: int = 0
+    total_packets_up: int = 0
+    total_packets_down: int = 0
+
+    @property
+    def bytes(self) -> int:
+        return self.bytes_up + self.bytes_down
+
+    @property
+    def total_bytes(self) -> int:
+        return self.total_bytes_up + self.total_bytes_down
+
+
+@dataclass(slots=True)
 class Snapshot:
     """Everything one poll returns."""
 

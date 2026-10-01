@@ -8,10 +8,10 @@ version = "0.1.0"
 description = "Async client for Cisco Mobility Express controllers (SNMP, later SSH CLI)"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.12"
-dependencies = ["pysnmp>=7.1"]
+dependencies = ["asyncssh>=2.14", "pysnmp>=7.1"]
 
 [project.optional-dependencies]
-dev = ["pytest-homeassistant-custom-component", "ruff>=0.6", "asyncssh>=2.14"]
+dev = ["pytest-homeassistant-custom-component", "ruff>=0.6"]
 
 [tool.setuptools]
 packages = ["pyciscome", "pyciscome.parsers"]

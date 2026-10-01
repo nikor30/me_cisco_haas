@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from . import oids
-from .models import AccessPoint, Client, Controller, Snapshot, Wlan
+from .cli import CliError, CliTransport
+from .models import AccessPoint, Application, Client, Controller, Snapshot, Wlan
 from .parsers import airespace
+from .parsers import cli as cli_parsers
 from .snmp import SnmpTransport, SnmpValue
 
 # Only the columns the parsers read are walked; a whole-table walk would fetch ~10x more.
@@ -28,8 +30,9 @@ CONTROLLER_ROOTS = (oids.SYSTEM, oids.INVENTORY, oids.RESOURCES)
 class MobilityExpress:
     """Read-only view of one Mobility Express controller."""
 
-    def __init__(self, transport: SnmpTransport) -> None:
+    def __init__(self, transport: SnmpTransport, cli: CliTransport | None = None) -> None:
         self._transport = transport
+        self._cli = cli
 
     async def _columns(self, spec: dict[str, tuple[int, ...]]) -> dict[str, dict[str, SnmpValue]]:
         columns: dict[str, dict[str, SnmpValue]] = {}
@@ -63,3 +66,10 @@ class MobilityExpress:
         wlans = await self.fetch_wlans()
         clients = await self.fetch_clients({mac: ap.name for mac, ap in access_points.items()})
         return Snapshot(controller=controller, access_points=access_points, wlans=wlans, clients=clients)
+
+    async def fetch_applications(self) -> list[Application]:
+        """Top applications seen by AVC, busiest first. Needs the CLI: the data is not in SNMP."""
+        if self._cli is None:
+            raise CliError("no CLI transport configured")
+        output = await self._cli.run([cli_parsers.TOP_APPS])
+        return cli_parsers.parse_top_apps(output[cli_parsers.TOP_APPS])

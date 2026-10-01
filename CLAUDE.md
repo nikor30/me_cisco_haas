@@ -16,7 +16,11 @@ rotation) and events (client join/leave/roam). Owner: Niko.
 - **Milestone:** M0–M2 done. **M3 code-complete** (2026-10-01): `custom_components/cisco_me_plus` has
   config flow (host, v2c community, port), options flow (scan interval, consider_home), one SNMP
   coordinator, sensors and binary sensors for controller/AP/radio/WLAN, and a `device_tracker` per client.
-  26 tests pass, including a live read-only setup against the ME (97 entities).
+  Extended the same day on Niko's request with **traffic, top clients and top applications**: download /
+  upload rate sensors (controller, per AP, per WLAN), `Top client` (by throughput) and `Top client by
+  data usage` sensors, per-client rates as tracker attributes, and a `Top application` sensor fed by an
+  optional SSH login (config flow + reconfigure step). 50 tests; the live read-only run against the ME
+  gives 112 entities, 30 applications and real rates.
 - **Not yet done for M3's exit criterion:** it has never run in a real Home Assistant install; the
   "24 h in dev HA without errors" check is open. Niko has not said which HA instance to test on.
 - **Next step:** install on a real HA (HACS custom repo or copy the folder), watch it for a day, then M4
@@ -67,6 +71,8 @@ Decisions made after the kickstart was written. Newest first.
 | 2026-10-01 | Repo stays `me_cisco_haas`; integration domain is `cisco_me_plus` | Niko's choice; kickstart §7 name `cisco-me-ha` is obsolete |
 | 2026-10-01 | `pyciscome` is vendored at `custom_components/cisco_me_plus/pyciscome` (was `lib/pyciscome`) | HACS only ships the integration folder and the lib is not on PyPI; `pyproject.toml` still exposes it as top-level `pyciscome`. Claude's call — Niko had picked "inside this repo" |
 | 2026-10-01 | One coordinator, full snapshot every 30 s (min 10 s), instead of a separate fast client poll | A full snapshot takes ~1.2 s, so the split in AD-03 is not needed yet |
+| 2026-10-01 | SSH is used in M3 already, for `show` commands only (`SshCli` refuses everything else); one short session every 120 s | Applications are only available via CLI; still within the read-only rule |
+| 2026-10-01 | Top clients/applications are one sensor each with the ranked list as an unrecorded attribute | Avoids dozens of entities and recorder bloat |
 | 2026-10-01 | WLAN "enabled" is a read-only binary sensor until M4 turns it into a switch | Read-only rule |
 | 2026-10-01 | Commit directly to `main` and push | Solo repo, Niko's choice |
 | 2026-10-01 | Project memory lives in this file, in git | Requested by Niko |
@@ -101,6 +107,21 @@ Verified facts about the real device (OIDs, CLI quirks, timings). Captured 2026-
   `User:` / `Password:` again. Prompt is `(Cisco Controller) >`. `config paging disable` works.
 - `show client summary` etc. match the formats assumed in kickstart §2.2.
 
+### Traffic and applications
+
+- Client byte counters (`2.1.6.1.2` = received from client = its upload, `2.1.6.1.3` = sent to client =
+  its download) are refreshed by the controller only **about every 90 s**, staggered per AP. Rates are
+  therefore computed over the time since a client's counters last moved and held until they move again
+  (zero after 200 s without change). Counters restart when a client re-associates.
+- Application statistics (AVC) are **not in SNMP** (no CISCO-LWAPP-AVC-MIB on ME). ME is FlexConnect, so
+  the command is `show flexconnect avc statistics top-apps` (also `… top-apps upstream|downstream`,
+  `… application <name>`); plain `show avc …` does not exist. AVC visibility is enabled on both WLANs.
+  The table has a recent window ("n secs") and totals per application, up and down.
+- `show flexconnect avc statistics client <mac> top-apps` exists but answered "AVC Statstics Not found"
+  for the clients tried — no per-client application data so far.
+- One SSH session with one show command takes ~0.3 s. A wrong password just re-prompts `User:`.
+- The CLI's `?` help works over SSH without executing anything (clear the line with Ctrl-U afterwards).
+
 ### SNMP — AIRESPACE (`1.3.6.1.4.1.14179`), 6489 varbinds, walk takes well under a minute
 
 | What | OID (under 14179) | Notes |
@@ -134,3 +155,4 @@ IPs, names) come back as raw bytes. The master AP's serial equals the controller
   both SNMP walks, resolved the core OIDs. Only read-only commands were sent to the ME.
   Built `tools/anonymise_fixtures.py`, committed anonymised fixtures, built `lib/pyciscome` (M2).
   Built the HA integration (M3) with tests; verified live read-only.
+  Added traffic rates, top clients and top applications (SSH, show-only) to M3.

@@ -3,24 +3,48 @@
     "step": {
       "user": {
         "title": "Cisco Mobility Express",
-        "description": "Connect to the controller over SNMP v2c. A read-only community is enough.",
+        "description": "Connect to the controller over SNMP v2c; a read-only community is enough. The SSH login is optional and only used to read application statistics (show commands only).",
         "data": {
           "host": "Host",
           "community": "SNMP community",
-          "port": "SNMP port"
+          "port": "SNMP port",
+          "username": "SSH username (optional)",
+          "password": "SSH password (optional)"
         },
         "data_description": {
           "host": "IP address or hostname of the Mobility Express controller.",
-          "community": "Read-only SNMP v2c community configured on the controller."
+          "community": "Read-only SNMP v2c community configured on the controller.",
+          "username": "Leave empty to skip application statistics."
+        }
+      },
+      "reconfigure": {
+        "title": "Cisco Mobility Express",
+        "description": "Connect to the controller over SNMP v2c; a read-only community is enough. The SSH login is optional and only used to read application statistics (show commands only).",
+        "data": {
+          "host": "Host",
+          "community": "SNMP community",
+          "port": "SNMP port",
+          "username": "SSH username (optional)",
+          "password": "SSH password (optional)"
+        },
+        "data_description": {
+          "host": "IP address or hostname of the Mobility Express controller.",
+          "community": "Read-only SNMP v2c community configured on the controller.",
+          "username": "Leave empty to skip application statistics."
         }
       }
     },
     "error": {
       "cannot_connect": "No SNMP answer from this host. Check the address, the community and that SNMP v2c is enabled.",
-      "not_mobility_express": "The device answered, but it does not look like a Mobility Express controller."
+      "not_mobility_express": "The device answered, but it does not look like a Mobility Express controller.",
+      "invalid_auth": "The controller rejected the SSH user name or password.",
+      "cannot_connect_ssh": "SNMP works, but the SSH connection failed.",
+      "password_required": "Enter the password for the SSH user."
     },
     "abort": {
-      "already_configured": "This controller is already configured."
+      "already_configured": "This controller is already configured.",
+      "reconfigure_successful": "Configuration updated.",
+      "unique_id_mismatch": "This is a different controller than the one configured."
     }
   },
   "options": {
@@ -38,26 +62,77 @@
   },
   "entity": {
     "sensor": {
-      "cpu": { "name": "CPU usage" },
-      "memory": { "name": "Memory usage" },
-      "uptime": { "name": "Last restart" },
-      "clients": { "name": "Clients" },
-      "clients_24": { "name": "Clients 2.4 GHz" },
-      "clients_5": { "name": "Clients 5 GHz" },
-      "access_points": { "name": "Access points online" },
-      "ip": { "name": "IP address" },
-      "radio_channel": { "name": "{radio} channel" },
-      "radio_channel_width": { "name": "{radio} channel width" },
-      "radio_tx_power_level": { "name": "{radio} transmit power level" },
-      "radio_utilization": { "name": "{radio} channel utilization" },
-      "radio_noise": { "name": "{radio} noise floor" },
-      "radio_clients": { "name": "{radio} clients" }
+      "cpu": {
+        "name": "CPU usage"
+      },
+      "memory": {
+        "name": "Memory usage"
+      },
+      "uptime": {
+        "name": "Last restart"
+      },
+      "clients": {
+        "name": "Clients"
+      },
+      "clients_24": {
+        "name": "Clients 2.4 GHz"
+      },
+      "clients_5": {
+        "name": "Clients 5 GHz"
+      },
+      "access_points": {
+        "name": "Access points online"
+      },
+      "ip": {
+        "name": "IP address"
+      },
+      "radio_channel": {
+        "name": "{radio} channel"
+      },
+      "radio_channel_width": {
+        "name": "{radio} channel width"
+      },
+      "radio_tx_power_level": {
+        "name": "{radio} transmit power level"
+      },
+      "radio_utilization": {
+        "name": "{radio} channel utilization"
+      },
+      "radio_noise": {
+        "name": "{radio} noise floor"
+      },
+      "radio_clients": {
+        "name": "{radio} clients"
+      },
+      "download_rate": {
+        "name": "Download rate"
+      },
+      "upload_rate": {
+        "name": "Upload rate"
+      },
+      "top_client": {
+        "name": "Top client"
+      },
+      "top_client_usage": {
+        "name": "Top client by data usage"
+      },
+      "top_application": {
+        "name": "Top application"
+      }
     },
     "binary_sensor": {
-      "reachable": { "name": "Reachable" },
-      "online": { "name": "Online" },
-      "radio_up": { "name": "{radio} radio" },
-      "wlan_enabled": { "name": "Enabled" }
+      "reachable": {
+        "name": "Reachable"
+      },
+      "online": {
+        "name": "Online"
+      },
+      "radio_up": {
+        "name": "{radio} radio"
+      },
+      "wlan_enabled": {
+        "name": "Enabled"
+      }
     }
   }
 }

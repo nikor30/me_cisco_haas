@@ -43,7 +43,7 @@ async def async_setup_entry(
 
 class MeClientTracker(CoordinatorEntity[MeCoordinator], ScannerEntity):
     # signal values change on every poll; keep them out of the recorder
-    _unrecorded_attributes = frozenset({"rssi", "snr", "data_rate"})
+    _unrecorded_attributes = frozenset({"rssi", "snr", "data_rate", "download_bps", "upload_bps"})
 
     def __init__(self, coordinator: MeCoordinator, mac: str) -> None:
         super().__init__(coordinator)
@@ -86,4 +86,8 @@ class MeClientTracker(CoordinatorEntity[MeCoordinator], ScannerEntity):
             "snr": client.snr,
             "data_rate": client.data_rate_mbps,
         }
+        traffic = self.coordinator.traffic.get(client.mac)
+        if traffic is not None and self.coordinator.data.clients.get(client.mac) is client:
+            attributes["download_bps"] = round(traffic.download)
+            attributes["upload_bps"] = round(traffic.upload)
         return {key: value for key, value in attributes.items() if value is not None}

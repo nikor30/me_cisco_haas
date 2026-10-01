@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from homeassistant.const import CONF_HOST, CONF_PORT, Platform
+from homeassistant.const import CONF_HOST, CONF_PORT, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant
 
 from .const import CONF_COMMUNITY, DEFAULT_PORT
-from .coordinator import MeConfigEntry, MeCoordinator, async_create_transport
+from .coordinator import MeAppCoordinator, MeConfigEntry, MeCoordinator, async_create_transport
 
 PLATFORMS = [Platform.BINARY_SENSOR, Platform.DEVICE_TRACKER, Platform.SENSOR]
 
@@ -21,6 +21,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeConfigEntry) -> bool:
     except BaseException:
         transport.close()
         raise
+    if entry.data.get(CONF_USERNAME):
+        # a failing SSH login must not take the SNMP entities down with it: no first-refresh check
+        coordinator.apps = MeAppCoordinator(hass, entry, transport)
+        await coordinator.apps.async_refresh()
     entry.runtime_data = coordinator
     entry.async_on_unload(transport.close)
     entry.async_on_unload(entry.add_update_listener(_async_reload_on_options_change))

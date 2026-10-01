@@ -16,17 +16,20 @@ from homeassistant.const import (
     PERCENTAGE,
     SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     EntityCategory,
+    UnitOfDataRate,
     UnitOfFrequency,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from homeassistant.util import dt as dt_util
 
+from .const import DOMAIN, TOP_LIST_SIZE
 from .coordinator import MeConfigEntry, MeCoordinator
 from .entity import ApEntity, ControllerEntity, RadioEntity, WlanEntity, add_discovered
-from .pyciscome import AccessPoint, Radio, Snapshot, Wlan
+from .pyciscome import AccessPoint, Client, Radio, Snapshot, Wlan
 from .pyciscome.models import BAND_5, BAND_24
 
 # an uptime-derived boot time moves by a second or two between polls; ignore that
@@ -236,11 +239,170 @@ class WlanSensor(MeSensorMixin, WlanEntity):
         return self.wlan
 
 
+DIRECTIONS = ("download", "upload")
+
+
+class RateSensorMixin(SensorEntity):
+    """Throughput summed over the clients the concrete class selects."""
+
+    _attr_device_class = SensorDeviceClass.DATA_RATE
+    _attr_native_unit_of_measurement = UnitOfDataRate.BITS_PER_SECOND
+    _attr_suggested_unit_of_measurement = UnitOfDataRate.MEGABITS_PER_SECOND
+    _attr_suggested_display_precision = 2
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _direction: str
+
+    def _set_direction(self, direction: str) -> None:
+        self._direction = direction
+        self._attr_translation_key = f"{direction}_rate"
+
+    def _matches(self, client: Client) -> bool:
+        return True
+
+    @property
+    def native_value(self) -> float:
+        return self.coordinator.rate(self._direction, self._matches)
+
+
+class ControllerRateSensor(RateSensorMixin, ControllerEntity):
+    def __init__(self, coordinator: MeCoordinator, direction: str) -> None:
+        super().__init__(coordinator, f"{direction}_rate")
+        self._set_direction(direction)
+
+
+class ApRateSensor(RateSensorMixin, ApEntity):
+    def __init__(self, coordinator: MeCoordinator, ap_mac: str, direction: str) -> None:
+        super().__init__(coordinator, ap_mac, f"{direction}_rate")
+        self._set_direction(direction)
+
+    def _matches(self, client: Client) -> bool:
+        return client.ap_mac == self._ap_mac
+
+
+class WlanRateSensor(RateSensorMixin, WlanEntity):
+    def __init__(self, coordinator: MeCoordinator, wlan_id: int, direction: str) -> None:
+        super().__init__(coordinator, wlan_id, f"{direction}_rate")
+        self._set_direction(direction)
+
+    def _matches(self, client: Client) -> bool:
+        return client.wlan_id == self._wlan_id
+
+
+class TopClientSensor(ControllerEntity, SensorEntity):
+    """Name of the busiest client; the ranked list is in the attributes."""
+
+    # the list changes on every poll and would bloat the recorder
+    _unrecorded_attributes = frozenset({"clients"})
+
+    def __init__(self, coordinator: MeCoordinator, by_usage: bool) -> None:
+        key = "top_client_usage" if by_usage else "top_client"
+        super().__init__(coordinator, key)
+        self._attr_translation_key = key
+        self._by_usage = by_usage
+
+    def _name(self, client: Client) -> str:
+        """The name the user gave the client's tracker, else its MAC."""
+        registry = er.async_get(self.hass)
+        entity_id = registry.async_get_entity_id("device_tracker", DOMAIN, client.mac)
+        entry = registry.async_get(entity_id) if entity_id else None
+        return (entry.name if entry else None) or client.mac
+
+    def _ranking(self) -> list[dict[str, str | int | None]]:
+        rows: list[dict[str, str | int | None]] = []
+        if self._by_usage:
+            for client in self.coordinator.clients_by_usage()[:TOP_LIST_SIZE]:
+                rows.append({"bytes_down": client.bytes_tx, "bytes_up": client.bytes_rx})
+                rows[-1] |= self._describe(client)
+        else:
+            for client, traffic in self.coordinator.clients_by_rate()[:TOP_LIST_SIZE]:
+                rows.append({"download_bps": round(traffic.download), "upload_bps": round(traffic.upload)})
+                rows[-1] |= self._describe(client)
+        return rows
+
+    def _describe(self, client: Client) -> dict[str, str | int | None]:
+        return {
+            "name": self._name(client),
+            "mac": client.mac,
+            "ip": client.ip,
+            "ap": client.ap_name,
+            "ssid": client.ssid,
+        }
+
+    @property
+    def native_value(self) -> str | None:
+        ranking = self._ranking()
+        return str(ranking[0]["name"]) if ranking else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, list[dict[str, str | int | None]]]:
+        return {"clients": self._ranking()}
+
+
+class TopApplicationSensor(ControllerEntity, SensorEntity):
+    """Busiest application according to AVC; the ranked list is in the attributes."""
+
+    _attr_translation_key = "top_application"
+    _unrecorded_attributes = frozenset({"applications"})
+
+    def __init__(self, coordinator: MeCoordinator) -> None:
+        super().__init__(coordinator, "top_application")
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        if self.coordinator.apps is not None:
+            self.async_on_remove(self.coordinator.apps.async_add_listener(self._handle_apps_update))
+
+    @callback
+    def _handle_apps_update(self) -> None:
+        self.async_write_ha_state()
+
+    @property
+    def available(self) -> bool:
+        apps = self.coordinator.apps
+        return apps is not None and apps.last_update_success
+
+    @property
+    def native_value(self) -> str | None:
+        apps = self.coordinator.apps
+        return apps.data[0].name if apps and apps.data else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, list[dict[str, str | int]]]:
+        apps = self.coordinator.apps
+        return {
+            "applications": [
+                {
+                    "name": app.name,
+                    "bytes_down": app.bytes_down,
+                    "bytes_up": app.bytes_up,
+                    "total_bytes_down": app.total_bytes_down,
+                    "total_bytes_up": app.total_bytes_up,
+                }
+                for app in (apps.data if apps and apps.data else [])[:TOP_LIST_SIZE]
+            ]
+        }
+
+
+def _controller_sensors(coordinator: MeCoordinator) -> list[Entity]:
+    entities: list[Entity] = [ControllerSensor(coordinator, d) for d in CONTROLLER_SENSORS]
+    entities += [ControllerRateSensor(coordinator, direction) for direction in DIRECTIONS]
+    entities += [TopClientSensor(coordinator, by_usage=False), TopClientSensor(coordinator, by_usage=True)]
+    if coordinator.apps is not None:
+        entities.append(TopApplicationSensor(coordinator))
+    return entities
+
+
 def _discover(coordinator: MeCoordinator) -> Iterable[tuple[Hashable, Callable[[], Iterable[Entity]]]]:
     snapshot = coordinator.data
-    yield "controller", lambda: [ControllerSensor(coordinator, d) for d in CONTROLLER_SENSORS]
+    yield "controller", lambda: _controller_sensors(coordinator)
     for mac, ap in snapshot.access_points.items():
-        yield ("ap", mac), lambda mac=mac: [ApSensor(coordinator, mac, d) for d in AP_SENSORS]
+        yield (
+            ("ap", mac),
+            lambda mac=mac: [
+                *(ApSensor(coordinator, mac, d) for d in AP_SENSORS),
+                *(ApRateSensor(coordinator, mac, direction) for direction in DIRECTIONS),
+            ],
+        )
         for slot in ap.radios:
             yield (
                 ("radio", mac, slot),
@@ -249,7 +411,10 @@ def _discover(coordinator: MeCoordinator) -> Iterable[tuple[Hashable, Callable[[
     for wlan_id in snapshot.wlans:
         yield (
             ("wlan", wlan_id),
-            lambda wlan_id=wlan_id: [WlanSensor(coordinator, wlan_id, d) for d in WLAN_SENSORS],
+            lambda wlan_id=wlan_id: [
+                *(WlanSensor(coordinator, wlan_id, d) for d in WLAN_SENSORS),
+                *(WlanRateSensor(coordinator, wlan_id, direction) for direction in DIRECTIONS),
+            ],
         )
 
 

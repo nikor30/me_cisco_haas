@@ -42,7 +42,8 @@ BLANK_COLUMNS = (
     f"{CISCO}.513.1.1.1.1.37.",
     f"{CISCO}.599.1.3.1.1.38.",
 )
-CLI_SKIP = ("show_snmp",)
+# never publish: SNMP settings, full WLAN config dumps, and files named after a client MAC
+CLI_SKIP = re.compile(r"show_snmp|show_wlan_\d|(?:[0-9a-f]{2}_){5}[0-9a-f]{2}")
 
 MAC_RE = re.compile(r"(?<![0-9a-fA-F:])([0-9a-fA-F]{2}(?::[0-9a-fA-F]{2}){5})(?![0-9a-fA-F]|:[0-9a-fA-F])")
 IP_RE = re.compile(
@@ -166,7 +167,7 @@ def main() -> int:
     walk_lines = anonymise_walks(raw_dir / "snmp", mapper)
     outputs[out_dir / "snmp" / "me_8_10.walk"] = "\n".join(walk_lines) + "\n"
     for cli in sorted((raw_dir / "cli").glob("*.txt")):
-        if not cli.name.startswith(CLI_SKIP):
+        if not CLI_SKIP.search(cli.name):
             outputs[out_dir / "cli" / cli.name] = mapper.text(cli.read_text())
 
     leaks = mapper.leaks()
